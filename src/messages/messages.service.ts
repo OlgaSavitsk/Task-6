@@ -3,19 +3,46 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ExceptionsMessage } from 'src/app.constant';
 import { Repository } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
+//import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageEntity } from './entities/message.entity';
 import { StatusCodes } from 'http-status-codes';
 
 @Injectable()
 export class MessagesService {
+  clientToUser = {};
   constructor(
     @InjectRepository(MessageEntity)
     private userRepository: Repository<MessageEntity>,
   ) {}
 
-  async create(createMessageDto: CreateMessageDto) {
-    const messageCreated = this.userRepository.create(createMessageDto);
+  async identify(name: string, clientId: string) {
+    const sendedMes = await this.findAll().then((messages) =>
+      messages.filter((message) => message.name === name),
+    );
+    this.clientToUser[clientId] = name;
+    const [...setNames] = new Set([
+      ...(await this.getClientName()),
+      ...Object.values(this.clientToUser),
+    ]);
+    //const setNames = names.concat(Object.values(this.clientToUser));
+    return { sendedMes, setNames };
+  }
+
+  async getClientName() {
+    const users = await this.findAll().then((messages) =>
+      messages.map((message) => message.name),
+    );
+    return users;
+  }
+
+  async create(createMessageDto: CreateMessageDto, clientId: string) {
+    const messageCreated = this.userRepository.create({
+      name: this.clientToUser[clientId],
+      text: createMessageDto.text,
+      title: createMessageDto.title,
+      recipient: createMessageDto.recipient,
+      createdAt: Date.now().toString(),
+    });
     if (messageCreated) {
       const message = await this.userRepository.save(messageCreated);
       return message;
@@ -31,7 +58,7 @@ export class MessagesService {
     return messages;
   }
 
-  findOne(id: number) {
+  /*  findOne(id: number) {
     return `This action returns a #${id} message`;
   }
 
@@ -41,5 +68,5 @@ export class MessagesService {
 
   remove(id: number) {
     return `This action removes a #${id} message`;
-  }
+  } */
 }
