@@ -5,7 +5,6 @@ import { AppService } from './app.service';
 import { MessagesModule } from './messages/messages.module';
 import dataSource from './ormconfig';
 import { ConfigModule } from '@nestjs/config';
-//import { MessagesService } from './messages/messages.service';
 
 @Module({
   imports: [

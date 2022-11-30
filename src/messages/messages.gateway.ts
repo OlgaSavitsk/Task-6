@@ -7,7 +7,6 @@ import {
 } from '@nestjs/websockets';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-//import { UpdateMessageDto } from './dto/update-message.dto';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
@@ -30,7 +29,6 @@ export class MessagesGateway {
       client.id,
     );
     this.server.emit('message', message);
-    //client.broadcast.emit('message', message);
     return message;
   }
 
@@ -38,11 +36,6 @@ export class MessagesGateway {
   findAll() {
     return this.messagesService.findAll();
   }
-
-  /* @SubscribeMessage('findOneMessage')
-  findOne(@MessageBody() id: number) {
-    return this.messagesService.findOne(id);
-  } */
 
   @SubscribeMessage('join')
   joinRoom(@MessageBody() name: string, @ConnectedSocket() client: Socket) {
@@ -56,23 +49,4 @@ export class MessagesGateway {
   ) {
     client.broadcast.emit('chat', message);
   }
-
-  /* @SubscribeMessage('typing')
-  async typing(
-    @MessageBody('isTyping') isTyping: boolean,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const name = this.messagesService.getClientName(client.id);
-    client.broadcast.emit('typing', { name, isTyping });
-  }
-
-  @SubscribeMessage('updateMessage')
-  update(@MessageBody() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(updateMessageDto.id, updateMessageDto);
-  }
-
-  @SubscribeMessage('removeMessage')
-  remove(@MessageBody() id: number) {
-    return this.messagesService.remove(id);
-  } */
 }

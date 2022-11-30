@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ExceptionsMessage } from 'src/app.constant';
 import { Repository } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
-//import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageEntity } from './entities/message.entity';
 import { StatusCodes } from 'http-status-codes';
 
@@ -24,7 +23,6 @@ export class MessagesService {
       ...(await this.getClientName()),
       ...Object.values(this.clientToUser),
     ]);
-    //const setNames = names.concat(Object.values(this.clientToUser));
     return { sendedMes, setNames };
   }
 
@@ -57,16 +55,4 @@ export class MessagesService {
     const messages = await this.userRepository.find();
     return messages;
   }
-
-  /*  findOne(id: number) {
-    return `This action returns a #${id} message`;
-  }
-
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} message`;
-  } */
 }
